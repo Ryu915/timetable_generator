@@ -51,7 +51,7 @@ def theory_count_on_day(timetable, day, subject_name):
     return count
 
 
-# Main 
+# Main
 
 def generate_timetable(data):
 
@@ -69,14 +69,22 @@ def generate_timetable(data):
         for t in data["teachers"]
     ]
 
+    # Global teacher clash tracker
+    teacher_busy = {
+        teacher.id: {
+            day: [False] * num_slots for day in base_days
+        }
+        for teacher in teachers
+    }
+
     final_timetable = {}
 
-    # Each division scheduled independently
+    # Each division scheduled independently (teachers tracked globally)
     for division in divisions:
 
         subjects = deepcopy(base_subjects)
 
-        # Shuffle days so divisions differ
+        # You originally had this — keeping it unchanged
         days = base_days[:]
         random.shuffle(days)
 
@@ -85,7 +93,9 @@ def generate_timetable(data):
             for day in base_days
         }
 
+        # -----------------------
         # Schedule LABS first
+        # -----------------------
         for subject in subjects:
             if subject.type != "lab":
                 continue
@@ -104,6 +114,14 @@ def generate_timetable(data):
                     if start_index is None:
                         continue
 
+                    # Teacher clash check (both slots)
+                    if (
+                        teacher_busy[teacher.id][day][start_index] or
+                        teacher_busy[teacher.id][day][start_index + 1]
+                    ):
+                        continue
+
+                    # Place lab
                     timetable[day][start_index] = {
                         "subject": subject.name,
                         "teacher": teacher.name,
@@ -117,41 +135,52 @@ def generate_timetable(data):
                     }
 
                     subject.current_hours += 2
+
+                    # Mark teacher busy
+                    teacher_busy[teacher.id][day][start_index] = True
+                    teacher_busy[teacher.id][day][start_index + 1] = True
+
                     break
 
+        # -----------------------
         # Schedule THEORY
-        for subject in subjects:
-            if subject.type != "theory":
-                continue
+        # Slot-by-slot → [slot][day]
+        # -----------------------
+        for i in range(num_slots):
+            for day in days:
 
-            teacher = find_teacher(subject, teachers)
+                if timetable[day][i] is not None:
+                    continue
 
-            while subject.current_hours < subject.hours_per_week:
+                for subject in subjects:
 
-                placed = False
+                    if subject.type != "theory":
+                        continue
 
-                for day in days:
+                    if subject.current_hours >= subject.hours_per_week:
+                        continue
 
                     # Max 2 theory per day per subject
                     if theory_count_on_day(timetable, day, subject.name) >= 2:
                         continue
 
-                    for i in range(num_slots):
-                        if timetable[day][i] is None:
-                            timetable[day][i] = {
-                                "subject": subject.name,
-                                "teacher": teacher.name,
-                                "type": "theory"
-                            }
-                            subject.current_hours += 1
-                            placed = True
-                            break
+                    teacher = find_teacher(subject, teachers)
 
-                    if placed:
-                        break
+                    # Teacher clash check
+                    if teacher_busy[teacher.id][day][i]:
+                        continue
 
-                if not placed:
-                    break
+                    # Place theory
+                    timetable[day][i] = {
+                        "subject": subject.name,
+                        "teacher": teacher.name,
+                        "type": "theory"
+                    }
+
+                    subject.current_hours += 1
+                    teacher_busy[teacher.id][day][i] = True
+
+                    break  # move to next slot
 
         final_timetable[division] = timetable
 

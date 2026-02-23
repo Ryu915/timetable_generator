@@ -1,7 +1,9 @@
 from flask import Flask
+from flask_cors import CORS
 from routes.timetable import timetable_bp
 
 app = Flask(__name__)
+CORS(app)
 app.register_blueprint(timetable_bp)
 
 if __name__ == "__main__":
