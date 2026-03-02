@@ -59,6 +59,23 @@ def generate_timetable(data):
     num_slots = data["slots_per_day"]
     divisions = data["divisions"]
 
+    # for rooms
+    total_theory_rooms = data["theory_rooms"]
+    total_lab_rooms = data["lab_rooms"]
+
+    theory_rooms = [f"T{i+1}" for i in range(total_theory_rooms)]
+    lab_rooms = [f"Lab{i+1}" for i in range(total_lab_rooms)]
+
+    theory_room_busy = {
+        day: {i: set() for i in range(num_slots)}
+        for day in base_days
+    }
+
+    lab_room_busy = {
+        day: {i: set() for i in range(num_slots)}
+        for day in base_days
+    }
+
     base_subjects = [
         Subject(s["id"], s["name"], s["type"], s["hours_per_week"])
         for s in data["subjects"]
@@ -84,7 +101,6 @@ def generate_timetable(data):
 
         subjects = deepcopy(base_subjects)
 
-        # You originally had this — keeping it unchanged
         days = base_days[:]
         random.shuffle(days)
 
@@ -119,17 +135,36 @@ def generate_timetable(data):
                     ):
                         continue
 
+                    # find free labs
+                    free_lab_rooms = [
+                        room for room in lab_rooms
+                        if room not in lab_room_busy[day][start_index]
+                        and room not in lab_room_busy[day][start_index + 1]
+                    ]
+ 
+                    if len(free_lab_rooms) < 4:
+                        continue
+
+                    assigned_rooms = free_lab_rooms[:4]
+
+                    # Mark lab rooms busy in both slots
+                    for room in assigned_rooms:
+                        lab_room_busy[day][start_index].add(room)
+                        lab_room_busy[day][start_index + 1].add(room)
+
                     # Place lab
                     timetable[day][start_index] = {
                         "subject": subject.name,
                         "teacher": teacher.name,
-                        "type": "lab"
+                        "type": "lab",
+                        "room": assigned_rooms
                     }
 
                     timetable[day][start_index + 1] = {
                         "subject": subject.name,
                         "teacher": teacher.name,
-                        "type": "lab"
+                        "type": "lab",
+                        "room": assigned_rooms
                     }
 
                     subject.current_hours += 2
@@ -165,12 +200,25 @@ def generate_timetable(data):
                     # Teacher clash check
                     if teacher_busy[teacher.id][day][i]:
                         continue
+                    
+                    # rooms
+                    free_theory_rooms = [
+                        room for room in theory_rooms
+                        if room not in theory_room_busy[day][i]
+                    ]
+
+                    if not free_theory_rooms:
+                        continue
+
+                    assigned_room = free_theory_rooms[0]
+                    theory_room_busy[day][i].add(assigned_room)
 
                     # Place theory
                     timetable[day][i] = {
                         "subject": subject.name,
                         "teacher": teacher.name,
-                        "type": "theory"
+                        "type": "theory",
+                        "room": assigned_room
                     }
 
                     subject.current_hours += 1
@@ -181,3 +229,4 @@ def generate_timetable(data):
         final_timetable[division] = timetable
 
     return final_timetable
+ 
