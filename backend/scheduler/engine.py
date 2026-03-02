@@ -93,9 +93,7 @@ def generate_timetable(data):
             for day in base_days
         }
 
-        # -----------------------
         # Schedule LABS first
-        # -----------------------
         for subject in subjects:
             if subject.type != "lab":
                 continue
@@ -142,10 +140,8 @@ def generate_timetable(data):
 
                     break
 
-        # -----------------------
         # Schedule THEORY
         # Slot-by-slot → [slot][day]
-        # -----------------------
         for i in range(num_slots):
             for day in days:
 
