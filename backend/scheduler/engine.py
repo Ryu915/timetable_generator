@@ -159,7 +159,7 @@ def generate_timetable(data):
                         "type": "lab",
                         "room": assigned_rooms
                     }
-
+ 
                     timetable[day][start_index + 1] = {
                         "subject": subject.name,
                         "teacher": teacher.name,
@@ -176,7 +176,7 @@ def generate_timetable(data):
                     break
 
         # Schedule THEORY
-        # Slot-by-slot → [slot][day]
+        # Slot-by-slot  [slot][day]
         for i in range(num_slots):
             for day in days:
 
