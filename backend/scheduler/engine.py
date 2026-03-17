@@ -12,7 +12,7 @@ class Subject:
         self.hours_per_week = hours_per_week
         self.current_hours = 0
 
-
+ 
 class Teacher:
     def __init__(self, id, name, subjects):
         self.id = id
@@ -35,12 +35,14 @@ def day_has_lab(timetable, day):
             return True
     return False
 
-
-def find_two_consecutive_slots(day_slots):
-    for i in range(len(day_slots) - 1):
-        if day_slots[i] is None and day_slots[i + 1] is None:
-            return i
-    return None
+# for labs
+def find_all_consecutive_slots(day_slots):
+    indices = []
+    for i in range(0, len(day_slots), 2):  # step of 2
+        if i + 1 < len(day_slots):
+            if day_slots[i] is None and day_slots[i + 1] is None:
+                indices.append(i)
+    return indices
 
 
 def theory_count_on_day(timetable, day, subject_name):
@@ -118,62 +120,68 @@ def generate_timetable(data):
             sessions = subject.hours_per_week // 2
 
             for _ in range(sessions):
-
+                placed = False
                 for day in days:
 
                     if day_has_lab(timetable, day):
                         continue
 
-                    start_index = find_two_consecutive_slots(timetable[day])
-                    if start_index is None:
+                    start_indices = find_all_consecutive_slots(timetable[day])
+                    # if there are no available slots(sessions) for labs
+                    if not start_indices:
                         continue
+                    
+                    for start_index in start_indices:
+                        # Teacher clash check (both slots)
+                        if (
+                            teacher_busy[teacher.id][day][start_index] or
+                            teacher_busy[teacher.id][day][start_index + 1]
+                        ):
+                            continue
 
-                    # Teacher clash check (both slots)
-                    if (
-                        teacher_busy[teacher.id][day][start_index] or
-                        teacher_busy[teacher.id][day][start_index + 1]
-                    ):
-                        continue
+                        # find free labs
+                        free_lab_rooms = [
+                            room for room in lab_rooms
+                            if room not in lab_room_busy[day][start_index]
+                            and room not in lab_room_busy[day][start_index + 1]
+                        ]
+    
+                        if len(free_lab_rooms) < 4:
+                            continue
 
-                    # find free labs
-                    free_lab_rooms = [
-                        room for room in lab_rooms
-                        if room not in lab_room_busy[day][start_index]
-                        and room not in lab_room_busy[day][start_index + 1]
-                    ]
- 
-                    if len(free_lab_rooms) < 4:
-                        continue
+                        assigned_rooms = free_lab_rooms[:4]
 
-                    assigned_rooms = free_lab_rooms[:4]
+                        # Mark lab rooms busy in both slots
+                        for room in assigned_rooms:
+                            lab_room_busy[day][start_index].add(room)
+                            lab_room_busy[day][start_index + 1].add(room)
 
-                    # Mark lab rooms busy in both slots
-                    for room in assigned_rooms:
-                        lab_room_busy[day][start_index].add(room)
-                        lab_room_busy[day][start_index + 1].add(room)
+                        # Place lab
+                        timetable[day][start_index] = {
+                            "subject": subject.name,
+                            "teacher": teacher.name,
+                            "type": "lab",
+                            "room": assigned_rooms
+                        }
+    
+                        timetable[day][start_index + 1] = {
+                            "subject": subject.name,
+                            "teacher": teacher.name,
+                            "type": "lab",
+                            "room": assigned_rooms
+                        }
 
-                    # Place lab
-                    timetable[day][start_index] = {
-                        "subject": subject.name,
-                        "teacher": teacher.name,
-                        "type": "lab",
-                        "room": assigned_rooms
-                    }
- 
-                    timetable[day][start_index + 1] = {
-                        "subject": subject.name,
-                        "teacher": teacher.name,
-                        "type": "lab",
-                        "room": assigned_rooms
-                    }
+                        subject.current_hours += 2
 
-                    subject.current_hours += 2
+                        # Mark teacher busy
+                        teacher_busy[teacher.id][day][start_index] = True
+                        teacher_busy[teacher.id][day][start_index + 1] = True
 
-                    # Mark teacher busy
-                    teacher_busy[teacher.id][day][start_index] = True
-                    teacher_busy[teacher.id][day][start_index + 1] = True
+                        placed = True
+                        break
 
-                    break
+                    if placed:
+                        break
 
         # Schedule THEORY
         # Slot-by-slot  [slot][day]
