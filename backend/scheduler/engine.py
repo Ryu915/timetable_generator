@@ -52,6 +52,42 @@ def theory_count_on_day(timetable, day, subject_name):
             count += 1
     return count
 
+def get_subject_year(subject_id):
+    return subject_id // 100
+
+def getDivisionYear(div_id):
+    return div_id // 100
+
+def get_teachers_for_subject(subject, teachers):
+    return [t for t in teachers if subject.id in t.subjects]
+
+def assign_lab_teachers(candidates, teacher_busy, day, start_index, k=4):
+    result = []
+
+    def backtrack(start, path):
+        if len(path) == k:
+            return path
+
+        for i in range(start, len(candidates)):
+            teacher = candidates[i]
+
+            if (
+                teacher_busy[teacher.id][day][start_index] or
+                teacher_busy[teacher.id][day][start_index + 1]
+            ):
+                continue
+
+            path.append(teacher)
+
+            res = backtrack(i + 1, path)
+            if res:
+                return res
+
+            path.pop()
+
+        return None
+
+    return backtrack(0, [])
 
 # Main
 
@@ -101,6 +137,7 @@ def generate_timetable(data):
     # Each division scheduled independently (teachers tracked globally)
     for division in divisions:
 
+        curr_division_year = getDivisionYear(division["id"])
         subjects = deepcopy(base_subjects)
 
         days = base_days[:]
@@ -113,6 +150,11 @@ def generate_timetable(data):
 
         # Schedule LABS first
         for subject in subjects:
+            
+            curr_subject_year = get_subject_year(subject.id)
+            if curr_division_year != curr_subject_year: 
+                continue
+
             if subject.type != "lab":
                 continue
 
@@ -192,6 +234,10 @@ def generate_timetable(data):
                     continue
 
                 for subject in subjects:
+                    
+                    curr_subject_year = get_subject_year(subject.id)
+                    if curr_division_year != curr_subject_year: 
+                        continue
 
                     if subject.type != "theory":
                         continue
@@ -234,7 +280,7 @@ def generate_timetable(data):
 
                     break  # move to next slot
 
-        final_timetable[division] = timetable
+        final_timetable[division["name"]] = timetable
 
     return final_timetable
  

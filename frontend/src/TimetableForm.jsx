@@ -10,7 +10,7 @@ function TimetableForm({ setResult }) {
     try {
       const parsedData = JSON.parse(inputData);
 
-      const response = await fetch("http://127.0.0.1:5000/generate", {
+      const response = await fetch("http://localhost:5000/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,6 +23,26 @@ function TimetableForm({ setResult }) {
     } catch (error) {
       alert("Invalid JSON or server error");
       console.error(error);
+    }
+  };
+
+  const handleEvaluate = async () => {
+    if (!timetable) return;
+    setEvaluating(true);
+    try {
+      const response = await fetch("http://localhost:5000/ai/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ timetable }),
+      });
+
+      const data = await response.json();
+      setAiFeedback(data);
+    } catch (error) {
+      alert("AI evaluation failed");
+      console.error(error);
+    } finally {
+      setEvaluating(false);
     }
   };
 
