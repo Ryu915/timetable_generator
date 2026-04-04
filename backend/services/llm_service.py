@@ -1,6 +1,6 @@
 # integrate llm here
 
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM as Ollama
 from langchain_core.prompts import PromptTemplate
 import json
 
