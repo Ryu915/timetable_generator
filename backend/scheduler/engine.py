@@ -180,7 +180,7 @@ def generate_timetable(data):
                             teacher_busy[teacher.id][day][start_index + 1]
                         ):
                             continue
-
+ 
                         # find free labs
                         free_lab_rooms = [
                             room for room in lab_rooms
