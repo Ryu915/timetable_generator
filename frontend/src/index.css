@@ -5,22 +5,40 @@
 }
 
 :root {
-  --primary: #4f46e5;
-  --primary-dark: #3730a3;
-  --primary-light: #e0e7ff;
-  --bg: #f1f5f9;
+  /* Primary */
+  --primary: #ff350d;
+  --primary-dark: #ff350d;
+  --primary-light: #fff3ef;
+
+  --bg: #f6f7f9;
   --surface: #ffffff;
-  --border: #e2e8f0;
-  --text: #1e293b;
-  --muted: #64748b;
-  --lab-bg: #ede9fe;
-  --lab-text: #5b21b6;
-  --theory-bg: #dbeafe;
-  --theory-text: #1d4ed8;
-  --break-bg: #fef9c3;
-  --radius: 10px;
-  --shadow: 0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+
+  --border: rgba(0, 0, 0, 0.06);
+
+  --text: #111827;
+  --muted: #6b7280;
+
+  --lab-bg: #fafafa;
+  --lab-text: #ff350d;
+
+  --theory-bg: #f8fafc;
+  --theory-text: #ff350d;
+
+  --break-bg: #f1f5f9;
+
+  --radius: 6px;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 10px 40px rgba(0,0,0,0.05);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.06);
+
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
+
+
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -37,3 +55,8 @@ body {
 }
 
 button { font-family: inherit; cursor: pointer; }
+
+button:hover { 
+  background: #111827;
+  color: #fafafa;
+}

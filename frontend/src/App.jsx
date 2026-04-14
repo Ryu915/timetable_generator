@@ -29,7 +29,7 @@ function App() {
   return (
     <div className="page">
       <div className="app-header">
-        <h1>Timetable Generator</h1>
+        <h1>Timetable Generator.</h1>
         <p>Fill the form or paste JSON to generate and explore division &amp; teacher timetables</p>
       </div>
       <TimetableForm setResult={handleResult} />

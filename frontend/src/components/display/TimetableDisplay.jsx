@@ -4,12 +4,19 @@ import TeacherTable from "./TeacherTable";
 import AiPanel from "./AiPanel";
 import { buildTeacherSchedules } from "../../utils/buildTeacherSchedules";
 
+const DAYS_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
 function TimetableDisplay({ result, aiResult, loadingAI }) {
   const [view, setView] = useState("division");
   const [selected, setSelected] = useState(null);
 
   if (!result) return null;
 
+  // extract days from result
+  const firstDivision = Object.keys(result)[0];
+  const days = firstDivision ? Object.keys(result[firstDivision]) : [];
+  days.sort((a, b) => DAYS_ORDER.indexOf(a) - DAYS_ORDER.indexOf(b));
+  
   const divisions = Object.keys(result);
   const teacherSchedules = buildTeacherSchedules(result);
   const teachers = Object.keys(teacherSchedules).sort();
@@ -25,10 +32,17 @@ function TimetableDisplay({ result, aiResult, loadingAI }) {
 
         {/* View toggle */}
         <div className="view-toggle">
-          <button className={view === "division" ? "toggle-btn active" : "toggle-btn"} onClick={() => handleViewSwitch("division")}>
+          <button
+            className={view === "division" ? "toggle-btn active" : "toggle-btn"}
+            onClick={() => handleViewSwitch("division")}
+          >
             Division View
           </button>
-          <button className={view === "teacher" ? "toggle-btn active" : "toggle-btn"} onClick={() => handleViewSwitch("teacher")}>
+
+          <button
+            className={view === "teacher" ? "toggle-btn active" : "toggle-btn"}
+            onClick={() => handleViewSwitch("teacher")}
+          >
             Teacher View
           </button>
         </div>
@@ -37,12 +51,24 @@ function TimetableDisplay({ result, aiResult, loadingAI }) {
         <div className="div-selector">
           {view === "division"
             ? divisions.map((div) => (
-                <div key={div} className={`div-tab ${selected === div ? "active" : ""}`} onClick={() => setSelected(selected === div ? null : div)}>
+                <div
+                  key={div}
+                  className={`div-tab ${selected === div ? "active" : ""}`}
+                  onClick={() =>
+                    setSelected(selected === div ? null : div)
+                  }
+                >
                   {div}
                 </div>
               ))
             : teachers.map((t) => (
-                <div key={t} className={`div-tab teacher-tab ${selected === t ? "active" : ""}`} onClick={() => setSelected(selected === t ? null : t)}>
+                <div
+                  key={t}
+                  className={`div-tab teacher-tab ${selected === t ? "active" : ""}`}
+                  onClick={() =>
+                    setSelected(selected === t ? null : t)
+                  }
+                >
                   {t}
                 </div>
               ))
@@ -50,12 +76,20 @@ function TimetableDisplay({ result, aiResult, loadingAI }) {
         </div>
 
         {selected ? (
-          view === "division"
-            ? <DivisionTable division={selected} timetable={result[selected]} />
-            : <TeacherTable schedule={teacherSchedules[selected]} />
+          view === "division" ? (
+            <DivisionTable
+              division={selected}
+              timetable={result[selected]}
+              days={days}   
+            />
+          ) : (
+            <TeacherTable schedule={teacherSchedules[selected]} />
+          )
         ) : (
           <div className="hint-box">
-            {view === "division" ? "Select a division above to view its timetable." : "Select a teacher above to view their schedule."}
+            {view === "division"
+              ? "Select a division above to view its timetable."
+              : "Select a teacher above to view their schedule."}
           </div>
         )}
       </div>

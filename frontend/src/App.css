@@ -1,3 +1,7 @@
+body {
+  font-family: 'Roboto';
+}
+
 .page {
   display: flex;
   flex-direction: column;
@@ -9,8 +13,9 @@
   text-align: center;
 }
 
-.app-header h1 {
-  font-size: 2rem;
+.app-header h1 { 
+  font-family: 'Roboto';
+  font-size: 7rem;
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.5px;
@@ -24,10 +29,14 @@
 
 /* ── Form ── */
 .form-section {
+  border: none;
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   padding: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .form-section h2 {
@@ -41,11 +50,12 @@
 
 .form-section textarea {
   width: 100%;
+  max-width: 600px;
   min-height: 140px;
   padding: 0.85rem;
   border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-family: 'Courier New', monospace;
+  border-radius: var(--radius-sm);
+  font-family: 'Roboto', monospace;
   font-size: 0.82rem;
   background: #f8fafc;
   color: var(--text);
@@ -67,21 +77,23 @@
   background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  font-size: 1.5rem;
   font-weight: 600;
-  transition: background 0.2s, transform 0.1s;
+  
 }
 
-.btn-generate:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-generate:hover { background: black; }
 .btn-generate:active { transform: scale(0.98); }
 .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ── Content layout ── */
 .content-area {
   display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
 }
 
 /* ── Timetable section ── */
@@ -91,6 +103,11 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  background-color: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
 }
 
 /* ── Division tabs ── */
@@ -102,8 +119,8 @@
 
 .div-tab {
   background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
+  border: 1px solid #cbcbcb;
+  border-radius: var(--radius-md);
   padding: 1rem;
   text-align: center;
   font-weight: 700;
@@ -118,7 +135,6 @@
 .div-tab:hover {
   border-color: var(--primary);
   color: var(--primary);
-  transform: translateY(-2px);
 }
 
 .div-tab.active {
@@ -126,13 +142,20 @@
   border-color: var(--primary);
   color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 4px 18px rgba(79,70,229,0.3);
+  box-shadow: none;
+}
+
+.div-tab.active:hover {
+  background: black;
+  border: none;
 }
 
 /* ── Table wrapper ── */
 .tt-wrap {
+  width: 100%;
+  border: none;
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   overflow-x: auto;
 }
@@ -140,7 +163,7 @@
 .tt-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 1rem;
 }
 
 .tt-table th {
@@ -164,47 +187,48 @@
   vertical-align: middle;
 }
 
-.tt-table tr:hover td { background: #f8f7ff; }
 
 .time-col {
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--muted);
   white-space: nowrap;
-  background: #f8fafc !important;
+  background: var(--surface);
 }
 
 .break-row td {
-  background: var(--break-bg) !important;
+  background: var(--surface);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #92400e;
+  color: #64748b;
   padding: 0.35rem;
 }
 
 .cell-subj {
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   display: block;
   color: var(--text);
 }
 
 .cell-info {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   color: var(--muted);
   display: block;
   margin-top: 2px;
 }
 
-.cell-empty { color: #ccc; }
+.cell-empty { 
+  color: #ccc; 
+}
 
-.lab-cell { background: var(--lab-bg) !important; }
-.lab-cell .cell-subj { color: var(--lab-text); }
+.lab-cell { background: var(--surface); }
+.lab-cell .cell-subj { color: black; }
 
-.theory-cell { background: var(--theory-bg) !important; }
-.theory-cell .cell-subj { color: var(--theory-text); }
+.theory-cell { background: var(--surface); }
+.theory-cell .cell-subj { color: black; }
 
 .hint-box {
   background: var(--surface);
@@ -219,25 +243,28 @@
 
 /* ── AI Panel ── */
 .ai-panel {
-  width: 320px;
+  border: none;
+  border-radius: var(--radius-lg);
+  width: 100%;
   flex-shrink: 0;
   position: sticky;
   top: 1.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .ai-card {
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
 .ai-header {
-  background: var(--primary);
-  color: #fff;
+  background: var(--surface);
+  color: var(--muted);
   padding: 0.75rem 1.2rem;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 1.2rem;
   letter-spacing: 0.04em;
 }
 
@@ -291,6 +318,7 @@
 .view-toggle {
   display: flex;
   gap: 0.5rem;
+  border: 1px solid #cbcbcb;
   background: var(--surface);
   border-radius: var(--radius);
   padding: 0.4rem;
@@ -301,20 +329,25 @@
 .toggle-btn {
   padding: 0.45rem 1.4rem;
   border: none;
-  border-radius: 7px;
-  font-size: 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
   font-weight: 600;
   color: var(--muted);
   background: transparent;
   transition: all 0.18s ease;
 }
 
-.toggle-btn:hover { color: var(--primary); }
+.toggle-btn:hover { color:#f8fafc; }
+.toggle-btn.active:hover { 
+  color:#f8fafc;
+  background: black;
+}
+
 
 .toggle-btn.active {
   background: var(--primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+  box-shadow: none;
 }
 
 /* Teacher tabs are smaller text since names are longer */
@@ -327,11 +360,13 @@
 .input-mode-toggle {
   display: flex;
   gap: 0.5rem;
-  background: var(--bg);
-  border-radius: 8px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
   padding: 0.35rem;
   width: fit-content;
   margin-bottom: 1.2rem;
+  border: 1px solid;
+  border-color: #cbcbcb;
 }
 
 /* ── Structured form ── */
@@ -365,7 +400,7 @@
 .form-field select {
   padding: 0.5rem 0.75rem;
   border: 1.5px solid var(--border);
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-family: inherit;
   background: #f8fafc;
@@ -397,7 +432,7 @@
 
 .day-chip {
   padding: 0.35rem 0.85rem;
-  border-radius: 20px;
+  border-radius: 4px;
   border: 1.5px solid var(--border);
   font-size: 0.8rem;
   font-weight: 600;
@@ -418,6 +453,7 @@
 
 /* ── Dynamic rows ── */
 .dynamic-list {
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -434,7 +470,7 @@
   flex: 1;
   padding: 0.45rem 0.7rem;
   border: 1.5px solid var(--border);
-  border-radius: 7px;
+  border-radius: 4px;
   font-size: 0.85rem;
   font-family: inherit;
   background: #f8fafc;
@@ -455,7 +491,7 @@
   background: var(--primary-light);
   color: var(--primary);
   border: 1.5px dashed var(--primary);
-  border-radius: 7px;
+  border-radius: var(--radius-md);
   font-size: 0.82rem;
   font-weight: 600;
   transition: background 0.15s;
@@ -468,7 +504,7 @@
   background: #fee2e2;
   color: #dc2626;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 700;
   flex-shrink: 0;

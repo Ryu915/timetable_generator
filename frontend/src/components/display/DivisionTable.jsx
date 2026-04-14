@@ -1,15 +1,15 @@
+
+
 const TIME_SLOTS = [
-  "08:45 – 09:45",
-  "09:45 – 10:45",
-  "11:00 – 12:00",
-  "12:00 – 01:00",
-  "01:45 – 02:45",
-  "02:45 – 03:45",
+  "Slot 1",
+  "Slot 2",
+  "Slot 3",
+  "Slot 4",
+  "Slot 5",
+  "Slot 6"
 ];
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-
-function DivisionTable({ division, timetable }) {
+function DivisionTable({ division, timetable, days }) {
   const skipMap = {};
 
   return (
@@ -18,9 +18,12 @@ function DivisionTable({ division, timetable }) {
         <thead>
           <tr>
             <th>Time</th>
-            {DAYS.map((d) => <th key={d}>{d}</th>)}
+            {days.map((d) => (
+              <th key={d}>{d}</th>
+            ))}
           </tr>
         </thead>
+
         <tbody>
           {TIME_SLOTS.map((timeLabel, slotIndex) => {
             const rows = [];
@@ -28,27 +31,50 @@ function DivisionTable({ division, timetable }) {
             rows.push(
               <tr key={`slot-${slotIndex}`}>
                 <td className="time-col">{timeLabel}</td>
-                {DAYS.map((day) => {
+
+                {days.map((day) => {
                   const key = `${day}-${slotIndex}`;
                   if (skipMap[key]) return null;
 
                   const slot = timetable[day]?.[slotIndex];
-                  if (!slot) return <td key={key}><span className="cell-empty">—</span></td>;
+
+                  if (!slot) {
+                    return (
+                      <td key={key}>
+                        <span className="cell-empty">—</span>
+                      </td>
+                    );
+                  }
 
                   const nextSlot = timetable[day]?.[slotIndex + 1];
+
                   const isLabDouble =
                     slot.type === "lab" &&
                     nextSlot?.type === "lab" &&
                     nextSlot.subject === slot.subject &&
                     nextSlot.teacher === slot.teacher;
 
-                  if (isLabDouble) skipMap[`${day}-${slotIndex + 1}`] = true;
+                  if (isLabDouble) {
+                    skipMap[`${day}-${slotIndex + 1}`] = true;
+                  }
 
-                  const roomText = Array.isArray(slot.room) ? slot.room.join(", ") : slot.room;
-                  const cellClass = slot.type === "lab" ? "lab-cell" : slot.type === "theory" ? "theory-cell" : "";
+                  const roomText = Array.isArray(slot.room)
+                    ? slot.room.join(", ")
+                    : slot.room;
+
+                  const cellClass =
+                    slot.type === "lab"
+                      ? "lab-cell"
+                      : slot.type === "theory"
+                      ? "theory-cell"
+                      : "";
 
                   return (
-                    <td key={key} rowSpan={isLabDouble ? 2 : 1} className={cellClass}>
+                    <td
+                      key={key}
+                      rowSpan={isLabDouble ? 2 : 1}
+                      className={cellClass}
+                    >
                       <span className="cell-subj">{slot.subject}</span>
                       <span className="cell-info">{slot.teacher}</span>
                       <span className="cell-info">{roomText}</span>
@@ -58,8 +84,25 @@ function DivisionTable({ division, timetable }) {
               </tr>
             );
 
-            if (slotIndex === 1) rows.push(<tr key="break" className="break-row"><td colSpan={DAYS.length + 1}>10:45 – 11:00 &nbsp;|&nbsp; Break</td></tr>);
-            if (slotIndex === 3) rows.push(<tr key="lunch" className="break-row"><td colSpan={DAYS.length + 1}>01:00 – 01:45 &nbsp;|&nbsp; Lunch Break</td></tr>);
+            // Break after Slot 2
+            if (slotIndex === 1) {
+              rows.push(
+                <tr key="break" className="break-row">
+                  <td colSpan={days.length + 1}>Break</td>
+                </tr>
+              );
+            }
+
+            // Lunch after Slot 4
+            if (slotIndex === 3) {
+              rows.push(
+                <tr key="lunch" className="break-row">
+                  <td colSpan={days.length + 1}>
+                    Lunch Break
+                  </td>
+                </tr>
+              );
+            }
 
             return rows;
           })}

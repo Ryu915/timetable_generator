@@ -1,16 +1,17 @@
+ 
 const TIME_SLOTS = [
-  "08:45 – 09:45",
-  "09:45 – 10:45",
-  "11:00 – 12:00",
-  "12:00 – 01:00",
-  "01:45 – 02:45",
-  "02:45 – 03:45",
+  "Slot 1",
+  "Slot 2",
+  "Slot 3",
+  "Slot 4",
+  "Slot 5",
+  "Slot 6"
 ];
-
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 function TeacherTable({ schedule }) {
   const skipMap = {};
+
+  const days = schedule ? Object.keys(schedule) : [];
 
   return (
     <div className="tt-wrap">
@@ -18,9 +19,12 @@ function TeacherTable({ schedule }) {
         <thead>
           <tr>
             <th>Time</th>
-            {DAYS.map((d) => <th key={d}>{d}</th>)}
+            {days.map((d) => (
+              <th key={d}>{d}</th>
+            ))}
           </tr>
         </thead>
+
         <tbody>
           {TIME_SLOTS.map((timeLabel, slotIndex) => {
             const rows = [];
@@ -28,27 +32,51 @@ function TeacherTable({ schedule }) {
             rows.push(
               <tr key={`slot-${slotIndex}`}>
                 <td className="time-col">{timeLabel}</td>
-                {DAYS.map((day) => {
+
+                {days.map((day) => {
                   const key = `${day}-${slotIndex}`;
+
                   if (skipMap[key]) return null;
 
-                  const slot = schedule[day]?.[slotIndex];
-                  if (!slot) return <td key={key}><span className="cell-empty">—</span></td>;
+                  const slot = schedule?.[day]?.[slotIndex];
 
-                  const nextSlot = schedule[day]?.[slotIndex + 1];
+                  if (!slot) {
+                    return (
+                      <td key={key}>
+                        <span className="cell-empty">—</span>
+                      </td>
+                    );
+                  }
+
+                  const nextSlot = schedule?.[day]?.[slotIndex + 1];
+
                   const isLabDouble =
                     slot.type === "lab" &&
                     nextSlot?.type === "lab" &&
                     nextSlot.subject === slot.subject &&
                     nextSlot.division === slot.division;
 
-                  if (isLabDouble) skipMap[`${day}-${slotIndex + 1}`] = true;
+                  if (isLabDouble) {
+                    skipMap[`${day}-${slotIndex + 1}`] = true;
+                  }
 
-                  const roomText = Array.isArray(slot.room) ? slot.room.join(", ") : slot.room;
-                  const cellClass = slot.type === "lab" ? "lab-cell" : slot.type === "theory" ? "theory-cell" : "";
+                  const roomText = Array.isArray(slot.room)
+                    ? slot.room.join(", ")
+                    : slot.room;
+
+                  const cellClass =
+                    slot.type === "lab"
+                      ? "lab-cell"
+                      : slot.type === "theory"
+                      ? "theory-cell"
+                      : "";
 
                   return (
-                    <td key={key} rowSpan={isLabDouble ? 2 : 1} className={cellClass}>
+                    <td
+                      key={key}
+                      rowSpan={isLabDouble ? 2 : 1}
+                      className={cellClass}
+                    >
                       <span className="cell-subj">{slot.subject}</span>
                       <span className="cell-info">{slot.division}</span>
                       <span className="cell-info">{roomText}</span>
@@ -58,8 +86,23 @@ function TeacherTable({ schedule }) {
               </tr>
             );
 
-            if (slotIndex === 1) rows.push(<tr key="break" className="break-row"><td colSpan={DAYS.length + 1}>10:45 – 11:00 &nbsp;|&nbsp; Break</td></tr>);
-            if (slotIndex === 3) rows.push(<tr key="lunch" className="break-row"><td colSpan={DAYS.length + 1}>01:00 – 01:45 &nbsp;|&nbsp; Lunch Break</td></tr>);
+            if (slotIndex === 1) {
+              rows.push(
+                <tr key="break" className="break-row">
+                  <td colSpan={days.length + 1}>Break</td>
+                </tr>
+              );
+            }
+
+            if (slotIndex === 3) {
+              rows.push(
+                <tr key="lunch" className="break-row">
+                  <td colSpan={days.length + 1}>
+                    Lunch Break
+                  </td>
+                </tr>
+              );
+            }
 
             return rows;
           })}

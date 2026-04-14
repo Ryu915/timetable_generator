@@ -61,33 +61,16 @@ def getDivisionYear(div_id):
 def get_teachers_for_subject(subject, teachers):
     return [t for t in teachers if subject.id in t.subjects]
 
-def assign_lab_teachers(candidates, teacher_busy, day, start_index, k=4):
+def assign_lab_teachers(subject, teachers):
     result = []
 
-    def backtrack(start, path):
-        if len(path) == k:
-            return path
-
-        for i in range(start, len(candidates)):
-            teacher = candidates[i]
-
-            if (
-                teacher_busy[teacher.id][day][start_index] or
-                teacher_busy[teacher.id][day][start_index + 1]
-            ):
-                continue
-
-            path.append(teacher)
-
-            res = backtrack(i + 1, path)
-            if res:
-                return res
-
-            path.pop()
+    def backtrack(subject, teachers):
+        result.append(t for t in teachers if subject.id in t.subjects and t not in result
+                      for _ in range(0,4))
 
         return None
 
-    return backtrack(0, [])
+    return backtrack(subject, teachers)
 
 # Main
 
