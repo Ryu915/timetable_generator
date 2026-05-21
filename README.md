@@ -18,7 +18,7 @@ Explore division-specific timetables dynamically, showcasing allocated subjects,
 
 ### 3. Teacher Schedule View
 Verify teacher workload distribution and specific schedules to ensure there are no overloads or overlaps.
-![Teacher Schedule View](assets/teacher_timetable.png)
+![Teacher Schedule View](assets/teacher_timetable.jpg)
 
 ---
 
