@@ -14,7 +14,7 @@ Define days, divisions, room counts, and dynamic lists of subjects and teachers,
 
 ### 2. Division Timetable View
 Explore division-specific timetables dynamically, showcasing allocated subjects, teachers, slots, and rooms (theory and lab).
-![Division View](assets/division_timetable.png)
+![Division View](assets/division_timetable.jpg)
 
 ### 3. Teacher Schedule View
 Verify teacher workload distribution and specific schedules to ensure there are no overloads or overlaps.
