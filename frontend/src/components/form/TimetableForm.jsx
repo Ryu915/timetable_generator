@@ -15,7 +15,7 @@ function TimetableForm({ setResult }) {
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      setResult(data);
+      setResult(data, payload);
     } catch (error) {
       alert("Server error. Make sure the backend is running.");
       console.error(error);

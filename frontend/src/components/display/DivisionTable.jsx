@@ -1,5 +1,3 @@
-
-
 const TIME_SLOTS = [
   "Slot 1",
   "Slot 2",
@@ -48,11 +46,21 @@ function DivisionTable({ division, timetable, days }) {
 
                   const nextSlot = timetable[day]?.[slotIndex + 1];
 
+                  // ✅ Safe lab double detection (handles both formats)
                   const isLabDouble =
                     slot.type === "lab" &&
                     nextSlot?.type === "lab" &&
-                    nextSlot.subject === slot.subject &&
-                    nextSlot.teacher === slot.teacher;
+                    (
+                      // new format
+                      (slot.subjects && nextSlot.subjects &&
+                        JSON.stringify(slot.subjects) === JSON.stringify(nextSlot.subjects) &&
+                        JSON.stringify(slot.teachers) === JSON.stringify(nextSlot.teachers))
+                      ||
+                      // old format
+                      (slot.subject && nextSlot.subject &&
+                        slot.subject === nextSlot.subject &&
+                        slot.teacher === nextSlot.teacher)
+                    );
 
                   if (isLabDouble) {
                     skipMap[`${day}-${slotIndex + 1}`] = true;
@@ -75,9 +83,26 @@ function DivisionTable({ division, timetable, days }) {
                       rowSpan={isLabDouble ? 2 : 1}
                       className={cellClass}
                     >
-                      <span className="cell-subj">{slot.subject}</span>
-                      <span className="cell-info">{slot.teacher}</span>
-                      <span className="cell-info">{roomText}</span>
+                      {/* ✅ SAFE RENDERING */}
+                      <span className="cell-subj">
+                        {slot.type === "lab"
+                          ? (slot.subjects
+                              ? slot.subjects.join(" + ")
+                              : slot.subject)
+                          : slot.subject}
+                      </span>
+
+                      <span className="cell-info">
+                        {slot.type === "lab"
+                          ? (slot.teachers
+                              ? slot.teachers.join(", ")
+                              : slot.teacher)
+                          : slot.teacher}
+                      </span>
+
+                      <span className="cell-info">
+                        {roomText}
+                      </span>
                     </td>
                   );
                 })}

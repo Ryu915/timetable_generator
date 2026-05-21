@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+ENV/
+env/
+.env
+.venv
+
+# IDE and system files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Frontend build outputs and node_modules
+frontend/dist/
+frontend/node_modules/
+frontend/.eslintcache

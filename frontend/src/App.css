@@ -293,13 +293,18 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .ai-output {
-  font-family: 'Courier New', monospace;
-  font-size: 0.76rem;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
   white-space: pre-wrap;
-  color: var(--text);
-  line-height: 1.7;
-  max-height: 65vh;
+  color: #334155;
+  background: #fdfdfd;
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0,0,0,0.05);
+  max-height: 70vh;
   overflow-y: auto;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .ai-placeholder {

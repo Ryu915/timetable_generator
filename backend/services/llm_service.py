@@ -12,47 +12,38 @@ llm = Ollama(
 )
 
 evalution_prompt = PromptTemplate.from_template("""
-You are a timetable evaluation engine.
+You are a technical timetable evaluation expert. 
+Your task is to analyze the GENERATED TIMETABLE against the ORIGINAL REQUIREMENTS.
+
+1. ORIGINAL REQUIREMENTS (JSON config):
+{config}
+
+2. GENERATED TIMETABLE (JSON result):
+{timetable}
 
 STRICT RULES:
-- Output MUST be valid JSON
-- Do NOT write explanations
-- Do NOT use markdown
-- Do NOT use text outside JSON
+- Output MUST be valid JSON.
+- Respond ONLY with the JSON object.
+- Values must be EXTREMELY CONCISE (no long sentences).
 
-Return ONLY this format:
-
+Template:
 {{
-  "overall_score": 0,
-  "conflicts": "",
-  "teacher_load": {{
-    "balanced": false,
-    "overloaded": []
-  }},
-  "efficiency": {{
-    "idle_gaps": "",
-    "room_utilization": ""
-  }},
-  "issues": [],
-  "suggestions": []
+  "teacher_load_balanced": "True/False",
+  "overloaded_teachers": "None or names",
+  "top_suggestions": "None or brief bullet points stating improvements"
 }}
-                                                
-Analyze carefully and DO NOT return default values.
-Provide meaningful evaluation based on the timetable.
-Now analyze this timetable:
-
-{data}
 """)
 
 chain = evalution_prompt | llm
 
-def evaluate_timetable(timetable_json):
+def evaluate_timetable(timetable_json, config_json=None):
     """
-    Takes timetable JSON and returns evaluated structured output.
+    Takes timetable JSON and requirements config, returns a structured evaluation.
     """
     try:
         response = chain.invoke({
-            "data": json.dumps(timetable_json)
+            "timetable": json.dumps(timetable_json),
+            "config": json.dumps(config_json) if config_json else "{}"
         })
 
         return safe_parse(response)
@@ -69,7 +60,12 @@ def safe_parse(response):
     Ensures LLM output is valid JSON.
     """
     try:
-        return json.loads(response)
+       
+        clean = response.strip()
+        if clean.startswith("```json"): clean = clean[7:]
+        if clean.startswith("```"): clean = clean[3:]
+        if clean.endswith("```"): clean = clean[:-3]
+        return json.loads(clean.strip())
     except Exception:
         return {
             "error": "Invalid JSON from LLM",

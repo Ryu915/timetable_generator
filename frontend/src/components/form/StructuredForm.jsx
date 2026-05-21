@@ -12,9 +12,13 @@ function StructuredForm({ onSubmit, loading }) {
   const [labRooms, setLabRooms] = useState(8);
   const [subjects, setSubjects] = useState([emptySubject()]);
   const [teachers, setTeachers] = useState([emptyTeacher()]);
+  const [unimportantIds, setUnimportantIds] = useState([]);
 
   const toggleDay = (day) =>
     setDays((prev) => prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]);
+
+  const toggleUnimportant = (id) =>
+    setUnimportantIds((prev) => prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]);
 
   const updateSubject = (id, field, value) =>
     setSubjects((prev) => prev.map((s) => s.id === id ? { ...s, [field]: value } : s));
@@ -26,9 +30,25 @@ function StructuredForm({ onSubmit, loading }) {
     e.preventDefault();
 
     const divList = divisions.split(",").map((d, i) => ({ id: i + 1, name: d.trim() })).filter((d) => d.name);
+
+    // Process subjects and create a mapping for unimporant subject IDs
     const subjectList = subjects
       .filter((s) => s.name.trim())
-      .map((s, i) => ({ id: i + 1, name: s.name.trim(), type: s.type, hours_per_week: Number(s.hours_per_week) }));
+      .map((s, i) => ({
+        id: i + 1,
+        name: s.name.trim(),
+        type: s.type,
+        hours_per_week: Number(s.hours_per_week),
+        _originalId: s.id
+      }));
+
+    const unimportant_subjects = subjectList
+      .filter(s => unimportantIds.includes(s._originalId))
+      .map(s => ({ id: s.id }));
+
+    // Remove internal link id before sending
+    const finalSubjectList = subjectList.map(({ _originalId, ...rest }) => rest);
+
     const teacherList = teachers
       .filter((t) => t.name.trim())
       .map((t, i) => ({
@@ -43,8 +63,9 @@ function StructuredForm({ onSubmit, loading }) {
       divisions: divList,
       theory_rooms: Number(theoryRooms),
       lab_rooms: Number(labRooms),
-      subjects: subjectList,
+      subjects: finalSubjectList,
       teachers: teacherList,
+      unimportant_subjects
     });
   };
 
@@ -98,6 +119,18 @@ function StructuredForm({ onSubmit, loading }) {
             </div>
           ))}
           <button type="button" className="btn-add" onClick={() => setSubjects((prev) => [...prev, emptySubject()])}>+ Add Subject</button>
+        </div>
+      </div>
+
+      <div className="form-field">
+        <label>Vocational Subjects <span className="hint">(Click to tag as elective)</span></label>
+        <div className="day-chips">
+          {subjects.filter(s => s.name.trim()).map((s) => (
+            <span key={s.id} className={`day-chip ${unimportantIds.includes(s.id) ? "active" : ""}`} onClick={() => toggleUnimportant(s.id)}>
+              {s.name}
+            </span>
+          ))}
+          {subjects.filter(s => s.name.trim()).length === 0 && <span className="hint">Add subjects above first.</span>}
         </div>
       </div>
 

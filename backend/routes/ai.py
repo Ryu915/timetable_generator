@@ -12,7 +12,8 @@ def evaluate():
         if not data or "timetable" not in data:
             return jsonify({"error": "Missing timetable"}), 400
 
-        result = evaluate_timetable(data["timetable"])
+        config = data.get("config")
+        result = evaluate_timetable(data["timetable"], config)
         return jsonify(result), 200
 
     except Exception as e:

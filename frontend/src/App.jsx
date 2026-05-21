@@ -8,14 +8,14 @@ function App() {
   const [aiResult, setAiResult] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
 
-  const handleResult = async (data) => {
+  const handleResult = async (data, config) => {
     setResult(data);
     setLoadingAI(true);
     try {
       const res = await fetch("http://localhost:5000/ai/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ timetable: data }),
+        body: JSON.stringify({ timetable: data, config }),
       });
       const ai = await res.json();
       setAiResult(ai);
