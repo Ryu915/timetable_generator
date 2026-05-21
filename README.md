@@ -10,7 +10,7 @@ This application is designed to solve the NP-hard problem of university scheduli
 
 ### 1. Interactive Form & JSON Input
 Define days, divisions, room counts, and dynamic lists of subjects and teachers, or paste a raw JSON configuration.
-![Interactive Form Input](assets/form_input.png)
+![Interactive Form Input](assets/form_input.jpg)
 
 ### 2. Division Timetable View
 Explore division-specific timetables dynamically, showcasing allocated subjects, teachers, slots, and rooms (theory and lab).
